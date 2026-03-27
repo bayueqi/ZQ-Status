@@ -17,6 +17,7 @@
     "server": "node server/index.js"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1.6.7",
     "chart.js": "^4.4.7",
     "date-fns": "^3.6.0",

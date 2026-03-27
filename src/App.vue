@@ -24,12 +24,14 @@
         </main>
       </div>
       <Footer />
+      <Analytics />
     </div>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
   import { fetchMonitorData } from './utils/api'
+  import { Analytics } from '@vercel/analytics/vue'
   import Header from './components/Header.vue'
   import Stats from './components/Stats.vue'
   import Filter from './components/Filter.vue'
