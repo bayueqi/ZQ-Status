@@ -22,8 +22,6 @@
           <Card 
             :monitors="filteredMonitors"
             :error="errorMessage"
-            :is-admin="isAdmin"
-            @edit="handleEdit"
           />
         </main>
       </div>
@@ -31,7 +29,6 @@
       <AdminModal
         v-model="showAdminModal"
         :is-admin="isAdmin"
-        :edit-id="editTargetId"
         @login="handleLogin"
         @logout="handleLogout"
         @changed="refreshData"
@@ -40,7 +37,7 @@
   </template>
   
   <script setup>
-  import { ref, watch, onMounted } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { fetchMonitorData } from './utils/api'
   import { isAdmin as hasAdmin, clearAdmin } from './utils/admin'
   import Header from './components/Header.vue'
@@ -58,11 +55,6 @@
   const errorMessage = ref('')
   const isAdmin = ref(hasAdmin())
   const showAdminModal = ref(false)
-  const editTargetId = ref(null)
-
-  watch(showAdminModal, (open) => {
-    if (!open) editTargetId.value = null
-  })
   
   // 筛选相关状态
   const currentFilter = ref('all')
@@ -127,12 +119,6 @@
     clearAdmin()
     isAdmin.value = false
     showAdminModal.value = false
-  }
-
-  // 编辑监控
-  const handleEdit = (monitor) => {
-    editTargetId.value = monitor.id
-    showAdminModal.value = true
   }
   </script>
   

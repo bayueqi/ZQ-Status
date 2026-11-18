@@ -53,15 +53,6 @@
                 box-content"
               @click="openUrl(monitor.url)"
             />
-            <Icon
-              v-if="isAdmin"
-              icon="ph:pencil-simple"
-              class="w-5 h-5 p-1.5 rounded-full transition-colors duration-200
-                text-gray-400 hover:text-blue-500 hover:bg-blue-50
-                dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-blue-900/30
-                box-content"
-              @click="emit('edit', monitor)"
-            />
           </div>
         </div>
         <div class="shrink-0">
@@ -346,14 +337,8 @@ ChartJS.register(
 
 const props = defineProps({
   monitors: Array,
-  error: String,
-  isAdmin: {
-    type: Boolean,
-    default: false
-  }
+  error: String
 })
-
-const emit = defineEmits(['edit'])
 
 /**
  * 排序监控列表

@@ -333,10 +333,6 @@ const props = defineProps({
   isAdmin: {
     type: Boolean,
     default: false
-  },
-  editId: {
-    type: Number,
-    default: null
   }
 })
 
@@ -411,11 +407,6 @@ const load = async () => {
 
   try {
     monitors.value = await fetchMonitors()
-
-    if (props.editId) {
-      const target = monitors.value.find((item) => item.id === Number(props.editId))
-      if (target) startEdit(target)
-    }
   } catch (e) {
     error.value = e.message
   } finally {
