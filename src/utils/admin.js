@@ -26,7 +26,7 @@ const post = async (payload) => {
   let data
 
   try {
-    const response = await axios.post(ADMIN_URL, payload, { timeout: 15000 })
+    const response = await axios.post(ADMIN_URL, payload, { timeout: 20000 })
     data = response.data
   } catch (error) {
     const status = error.response?.status
@@ -47,26 +47,30 @@ const post = async (payload) => {
   return data
 }
 
-/**
- * 校验管理密码
- * @param {string} password
- */
+/** 校验管理密码 */
 export const login = async (password) => {
   await post({ action: 'auth', password })
   setAdminPassword(password)
 }
 
-/**
- * 新增监控
- * @param {string} name
- * @param {string} url
- */
-export const addMonitor = (name, url) =>
-  post({ action: 'add', password: getAdminPassword(), name, url })
+/** 获取监控列表 */
+export const fetchMonitors = async () => {
+  const data = await post({ action: 'list', password: getAdminPassword() })
+  return data.monitors || []
+}
 
-/**
- * 删除监控
- * @param {number} id
- */
+/** 新增监控 */
+export const addMonitor = ({ name, url, interval }) =>
+  post({ action: 'add', password: getAdminPassword(), name, url, interval })
+
+/** 修改监控 */
+export const updateMonitor = ({ id, name, url, interval }) =>
+  post({ action: 'update', password: getAdminPassword(), id, name, url, interval })
+
+/** 暂停或恢复监控 */
+export const setMonitorStatus = ({ id, status }) =>
+  post({ action: 'status', password: getAdminPassword(), id, status })
+
+/** 删除监控 */
 export const removeMonitor = (id) =>
   post({ action: 'delete', password: getAdminPassword(), id })

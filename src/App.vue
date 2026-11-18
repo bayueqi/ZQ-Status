@@ -33,7 +33,7 @@
         :is-admin="isAdmin"
         @login="handleLogin"
         @logout="handleLogout"
-        @added="refreshData"
+        @changed="refreshData"
       />
     </div>
   </template>
