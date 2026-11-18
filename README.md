@@ -30,6 +30,7 @@
 - 📈 数据统计：可视化展示可用率和响应时间
 - 🔔 故障记录：详细的宕机记录和原因分析
 - 🔄 自动刷新：定时自动更新监控数据
+- 🔐 网页端管理：验证密码后可新增、删除监控
 - 💫 平滑动画：流畅的用户界面交互体验
 
 ## ⚙️ 部署配置
@@ -41,10 +42,33 @@
 
 ### 获取 UptimeRobot API Key
 
+系统使用两个 Key：前端读取监控数据使用只读 Key，服务端新增、删除监控使用账号级 Main API Key。
+
 1. 注册/登录 [UptimeRobot](https://uptimerobot.com/)
 2. 进入 [Integrations & API](https://dashboard.uptimerobot.com/integrations)
-3. 下拉到最底部在 Main API keys 部分创建 **Read-Only API Key**
-4. 复制生成的 API Key
+3. 在 Main API keys 中创建只读 Key（以 `ur` 开头），对应 `VITE_UPTIMEROBOT_API_KEY`
+4. 再创建一个未勾选只读的 Main API Key（以 `u` 开头），对应 `UPTIMEROBOT_MAIN_API_KEY`
+
+### 环境变量
+
+| 变量 | 必填 | 说明 |
+| --- | --- | --- |
+| `VITE_UPTIMEROBOT_API_KEY` | 是 | 只读 Key，用于前端获取监控数据 |
+| `VITE_UPTIMEROBOT_API_URL` | 是 | 数据接口地址，默认 `/api/status` |
+| `VITE_UPTIMEROBOT_ADMIN_URL` | 否 | 管理接口地址，默认 `/api/admin` |
+| `VITE_APP_TITLE` | 否 | 站点名称 |
+| `UPTIMEROBOT_MAIN_API_KEY` | 管理功能必填 | 账号级 Key，仅由服务端读取 |
+| `ADMIN_PASSWORD` | 管理功能必填 | 管理密码，仅由服务端读取 |
+
+`VITE_` 前缀的变量在构建时写入前端产物，其余两个变量在运行时读取。部署平台的环境变量修改后需重新部署才会生效。
+
+### 网页端管理
+
+页面右上角的齿轮按钮用于进入管理。首次进入需输入 `ADMIN_PASSWORD`，通过后即可在弹窗内填写名称与地址新增监控，监控卡片上出现删除按钮。
+
+密码保存在浏览器会话中，关闭标签页后失效，也可在弹窗内点击「退出」立即清除。
+
+新增的监控类型为 HTTP(s)，检测间隔 300 秒。UptimeRobot 免费版单账号上限 50 个监控。
 
 ### API 代理说明
 
@@ -90,19 +114,24 @@ npm install
 3. 配置环境变量
 
 在 `.env` 文件中修改以下配置：
+
 ```bash
-# UptimeRobot API Key
+# 只读 Key
 VITE_UPTIMEROBOT_API_KEY = "ur2290572-af4663a4e3f83be26119abbe"
 
-# UptimeRobot API URL 
-# 除腾讯云 EdgeOne Pages 、vercel 、cloudflare pages 外 
-## 其它部署方式需要自行搭建 API 代理 
-## 代理地址 https://api.uptimerobot.com/v2/getMonitors
+# 数据接口地址
+# 腾讯云 EdgeOne Pages、Vercel、Cloudflare Pages 使用 /api/status
+# 其他部署方式需自行搭建代理，指向 https://api.uptimerobot.com/v2/getMonitors
 VITE_UPTIMEROBOT_API_URL = "/api/status"
+
+# 管理接口地址
+VITE_UPTIMEROBOT_ADMIN_URL = "/api/admin"
 
 # 站点名称
 VITE_APP_TITLE = "梦爱吃鱼"
 ```
+
+`UPTIMEROBOT_MAIN_API_KEY` 与 `ADMIN_PASSWORD` 不在 `.env` 中配置，需在部署平台的环境变量中设置。
 
 4. 开发调试
 ```bash
@@ -111,6 +140,7 @@ pnpm dev
 npm run dev
 
 # 开发环境需要将 VITE_UPTIMEROBOT_API_URL 设置为 "https://api.uptimerobot.com/v2/getMonitors"
+# 本地开发不启动 Pages Functions，管理接口不可用，需在部署环境验证
 ```
 
 5. 构建部署
