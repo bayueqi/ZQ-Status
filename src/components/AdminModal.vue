@@ -59,6 +59,18 @@
           </div>
         </div>
 
+        <!-- 错误提示 -->
+        <div
+          v-if="error"
+          class="flex items-start gap-2 px-6 py-3 text-sm
+            bg-red-50 dark:bg-red-900/20
+            text-red-600 dark:text-red-400
+            border-b border-red-100 dark:border-red-900/40"
+        >
+          <Icon icon="carbon:warning-filled" class="w-4 h-4 shrink-0 mt-0.5" />
+          <span class="min-w-0 break-words">{{ error }}</span>
+        </div>
+
         <!-- 未验证：密码 -->
         <form v-if="!isAdmin" @submit.prevent="submitLogin" class="p-6 space-y-4">
           <input
@@ -84,7 +96,6 @@
           >
             进入
           </button>
-          <p v-if="error" class="text-sm text-red-500 dark:text-red-400">{{ error }}</p>
         </form>
 
         <!-- 已验证：列表 -->
@@ -296,8 +307,6 @@
               </div>
             </div>
           </div>
-
-          <p v-if="error" class="px-1 text-sm text-red-500 dark:text-red-400">{{ error }}</p>
         </div>
       </div>
     </div>
