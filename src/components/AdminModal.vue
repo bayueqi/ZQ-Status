@@ -4,40 +4,44 @@
       v-if="modelValue"
       class="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
-      <div class="absolute inset-0 bg-black/60" @click="close"></div>
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="close"></div>
 
       <div
-        class="relative flex flex-col w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-xl
+        class="relative flex flex-col w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-2xl animate-fade
           bg-white dark:bg-gray-800
-          border border-gray-200 dark:border-gray-700"
+          border border-gray-200/60 dark:border-gray-700/60"
       >
         <!-- 头部 -->
-        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+        <div class="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-200/60 dark:border-gray-700/60">
           <div class="flex items-center gap-2">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">
               管理
             </h3>
-            <span v-if="isAdmin && !loading" class="text-xs text-gray-400">
+            <span
+              v-if="isAdmin && !loading"
+              class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300"
+            >
               {{ monitors.length }}
             </span>
           </div>
 
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-2">
             <button
               v-if="isAdmin"
               @click="startAdd"
-              class="flex items-center gap-1 px-3 h-8 rounded-full text-xs font-medium transition-colors duration-200
-                bg-blue-50 dark:bg-blue-900/30
-                text-blue-600 dark:text-blue-400
-                hover:bg-blue-100 dark:hover:bg-blue-900/50"
+              class="flex items-center gap-1.5 px-4 h-9 rounded-full
+                text-sm font-semibold text-white
+                bg-gradient-to-r from-blue-500 to-cyan-400
+                shadow-md shadow-blue-500/20
+                transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30"
             >
-              <Icon icon="ph:plus-bold" class="w-3.5 h-3.5" />
+              <Icon icon="ph:plus-bold" class="w-4 h-4" />
               添加
             </button>
             <button
               v-if="isAdmin"
               @click="logout"
-              class="px-3 h-8 rounded-full text-xs font-medium transition-colors duration-200
+              class="px-3 h-9 rounded-full text-sm font-medium transition-colors duration-200
                 text-gray-500 dark:text-gray-400
                 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
@@ -45,35 +49,38 @@
             </button>
             <button
               @click="close"
-              class="p-1 rounded-full transition-colors duration-200
+              class="flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200
+                bg-gray-50 dark:bg-gray-700/50
+                text-gray-500 dark:text-gray-400
                 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <Icon icon="carbon:close" class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <Icon icon="carbon:close" class="w-5 h-5" />
             </button>
           </div>
         </div>
 
         <!-- 未验证：密码 -->
-        <form v-if="!isAdmin" @submit.prevent="submitLogin" class="p-5 space-y-4">
+        <form v-if="!isAdmin" @submit.prevent="submitLogin" class="p-6 space-y-4">
           <input
             v-model="password"
             type="password"
             placeholder="管理密码"
             autocomplete="current-password"
-            class="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200
-              border-gray-200 dark:border-gray-600
-              bg-gray-50 dark:bg-gray-700
-              text-gray-900 dark:text-gray-100
+            class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+              bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100
               placeholder-gray-500 dark:placeholder-gray-400
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+              transition-all duration-200"
           />
           <button
             type="submit"
             :disabled="loading || !password"
             class="w-full py-3 rounded-lg font-semibold text-sm text-white
               bg-gradient-to-r from-blue-500 to-cyan-400
-              transition-opacity duration-200
-              disabled:opacity-50 disabled:cursor-not-allowed"
+              shadow-md shadow-blue-500/20
+              transition-all duration-200
+              hover:shadow-lg hover:shadow-blue-500/30
+              disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
           >
             进入
           </button>
@@ -81,43 +88,41 @@
         </form>
 
         <!-- 已验证：列表 -->
-        <div v-else class="flex-1 overflow-y-auto p-4 space-y-2">
+        <div v-else class="flex-1 overflow-y-auto p-4 space-y-3">
           <!-- 新增表单 -->
           <div
             v-if="adding"
-            class="p-3 rounded-xl border-2 border-blue-200 dark:border-blue-800
-              bg-blue-50/50 dark:bg-blue-900/10 space-y-2"
+            class="p-4 rounded-xl space-y-3
+              bg-blue-50/60 dark:bg-blue-900/15
+              border-2 border-dashed border-blue-200 dark:border-blue-800/60"
           >
             <input
               v-model="form.name"
               type="text"
               placeholder="网站名称"
-              class="w-full px-3 py-2 rounded-lg border-2 transition-all duration-200
-                border-gray-200 dark:border-gray-600
-                bg-white dark:bg-gray-700
-                text-gray-900 dark:text-gray-100
+              class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
                 placeholder-gray-500 dark:placeholder-gray-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                transition-all duration-200"
             />
             <input
               v-model="form.url"
               type="text"
               placeholder="https://example.com"
-              class="w-full px-3 py-2 rounded-lg border-2 transition-all duration-200
-                border-gray-200 dark:border-gray-600
-                bg-white dark:bg-gray-700
-                text-gray-900 dark:text-gray-100
+              class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
                 placeholder-gray-500 dark:placeholder-gray-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                transition-all duration-200"
             />
             <div class="flex items-center gap-2">
               <select
                 v-model.number="form.interval"
-                class="flex-1 px-3 py-2 rounded-lg border-2 transition-all duration-200
-                  border-gray-200 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  text-gray-900 dark:text-gray-100
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="flex-1 px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                  bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  transition-all duration-200"
               >
                 <option v-for="item in intervalOptions" :key="item.value" :value="item.value">
                   {{ item.label }}
@@ -126,17 +131,23 @@
               <button
                 @click="submitAdd"
                 :disabled="loading || !form.name.trim() || !form.url.trim()"
-                class="px-4 py-2 rounded-lg text-sm font-semibold text-white
+                class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white
                   bg-gradient-to-r from-blue-500 to-cyan-400
-                  disabled:opacity-50 disabled:cursor-not-allowed"
+                  shadow-md shadow-blue-500/20
+                  transition-all duration-200
+                  hover:shadow-lg hover:shadow-blue-500/30
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 添加
               </button>
               <button
                 @click="cancelForm"
-                class="px-4 py-2 rounded-lg text-sm font-medium
+                class="px-5 py-2.5 rounded-lg text-sm font-medium
                   text-gray-600 dark:text-gray-300
-                  hover:bg-gray-100 dark:hover:bg-gray-700"
+                  bg-white dark:bg-gray-700
+                  border border-gray-200 dark:border-gray-600
+                  hover:bg-gray-100 dark:hover:bg-gray-600
+                  transition-colors duration-200"
               >
                 取消
               </button>
@@ -144,7 +155,7 @@
           </div>
 
           <!-- 载入中 -->
-          <div v-if="loading && !monitors.length" class="flex justify-center py-8">
+          <div v-if="loading && !monitors.length" class="flex justify-center py-10">
             <Icon icon="ph:spinner" class="w-6 h-6 text-blue-500 animate-spin" />
           </div>
 
@@ -152,41 +163,40 @@
           <div
             v-for="monitor in monitors"
             :key="monitor.id"
-            class="rounded-xl border border-gray-200 dark:border-gray-700
-              bg-gray-50 dark:bg-gray-700/30"
+            class="rounded-xl transition-all duration-300
+              bg-gray-50 dark:bg-gray-800/50
+              border border-gray-100 dark:border-gray-700/60
+              hover:border-blue-200 dark:hover:border-blue-900/60"
           >
             <!-- 编辑态 -->
-            <div v-if="editingId === monitor.id" class="p-3 space-y-2">
+            <div v-if="editingId === monitor.id" class="p-4 space-y-3">
               <input
                 v-model="form.name"
                 type="text"
                 placeholder="网站名称"
-                class="w-full px-3 py-2 rounded-lg border-2 transition-all duration-200
-                  border-gray-200 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  text-gray-900 dark:text-gray-100
+                class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                  bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
                   placeholder-gray-500 dark:placeholder-gray-400
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  transition-all duration-200"
               />
               <input
                 v-model="form.url"
                 type="text"
                 placeholder="https://example.com"
-                class="w-full px-3 py-2 rounded-lg border-2 transition-all duration-200
-                  border-gray-200 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  text-gray-900 dark:text-gray-100
+                class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                  bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
                   placeholder-gray-500 dark:placeholder-gray-400
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  transition-all duration-200"
               />
               <div class="flex items-center gap-2">
                 <select
                   v-model.number="form.interval"
-                  class="flex-1 px-3 py-2 rounded-lg border-2 transition-all duration-200
-                    border-gray-200 dark:border-gray-600
-                    bg-white dark:bg-gray-700
-                    text-gray-900 dark:text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="flex-1 px-4 py-2.5 border-2 border-gray-200 dark:border-gray-600 rounded-lg
+                    bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    transition-all duration-200"
                 >
                   <option v-for="item in intervalOptionsFor(monitor)" :key="item.value" :value="item.value">
                     {{ item.label }}
@@ -195,17 +205,23 @@
                 <button
                   @click="submitEdit(monitor)"
                   :disabled="loading || !form.name.trim() || !form.url.trim()"
-                  class="px-4 py-2 rounded-lg text-sm font-semibold text-white
+                  class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white
                     bg-gradient-to-r from-blue-500 to-cyan-400
-                    disabled:opacity-50 disabled:cursor-not-allowed"
+                    shadow-md shadow-blue-500/20
+                    transition-all duration-200
+                    hover:shadow-lg hover:shadow-blue-500/30
+                    disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                 >
                   保存
                 </button>
                 <button
                   @click="cancelForm"
-                  class="px-4 py-2 rounded-lg text-sm font-medium
+                  class="px-5 py-2.5 rounded-lg text-sm font-medium
                     text-gray-600 dark:text-gray-300
-                    hover:bg-gray-100 dark:hover:bg-gray-700"
+                    bg-white dark:bg-gray-700
+                    border border-gray-200 dark:border-gray-600
+                    hover:bg-gray-100 dark:hover:bg-gray-600
+                    transition-colors duration-200"
                 >
                   取消
                 </button>
@@ -213,42 +229,54 @@
             </div>
 
             <!-- 展示态 -->
-            <div v-else class="flex items-center gap-3 px-3 py-2.5">
+            <div v-else class="flex items-center gap-3 px-4 py-3">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 min-w-0">
-                  <span class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <span class="truncate text-base font-bold text-gray-800 dark:text-gray-100">
                     {{ monitor.friendly_name }}
                   </span>
                   <span
-                    class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium"
-                    :class="statusClass(monitor.status)"
+                    class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                    :class="STATUS_MAP[monitor.status]?.classes || STATUS_MAP.default.classes"
                   >
-                    {{ statusText(monitor.status) }}
+                    <span class="relative flex">
+                      <span
+                        class="w-2 h-2 rounded-full"
+                        :class="STATUS_MAP[monitor.status]?.dot || STATUS_MAP.default.dot"
+                      ></span>
+                      <span
+                        class="absolute inset-0 w-2 h-2 rounded-full animate-ping opacity-75"
+                        :class="STATUS_MAP[monitor.status]?.dot || STATUS_MAP.default.dot"
+                      ></span>
+                    </span>
+                    {{ STATUS_MAP[monitor.status]?.text || STATUS_MAP.default.text }}
                   </span>
                 </div>
-                <div class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <div class="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <span class="truncate">{{ monitor.url }}</span>
-                  <span class="shrink-0">·</span>
+                  <div class="w-1 h-1 shrink-0 rounded-full bg-gray-300 dark:bg-gray-600" />
                   <span class="shrink-0">{{ intervalText(monitor.interval) }}</span>
                 </div>
               </div>
 
-              <div class="flex shrink-0 items-center gap-0.5">
+              <div class="flex shrink-0 items-center gap-1">
                 <button
                   @click="startEdit(monitor)"
-                  class="p-1.5 rounded-full transition-colors duration-200
-                    text-gray-400 hover:text-blue-500 hover:bg-blue-50
-                    dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-blue-900/30
-                    box-content"
+                  class="flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200
+                    bg-white dark:bg-gray-700/50
+                    text-gray-500 dark:text-gray-400
+                    hover:text-blue-600 hover:bg-blue-50
+                    dark:hover:text-blue-400 dark:hover:bg-blue-900/30"
                 >
                   <Icon icon="ph:pencil-simple" class="w-4 h-4" />
                 </button>
                 <button
                   @click="toggleStatus(monitor)"
-                  class="p-1.5 rounded-full transition-colors duration-200
-                    text-gray-400 hover:text-amber-500 hover:bg-amber-50
-                    dark:text-gray-500 dark:hover:text-amber-400 dark:hover:bg-amber-900/30
-                    box-content"
+                  class="flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200
+                    bg-white dark:bg-gray-700/50
+                    text-gray-500 dark:text-gray-400
+                    hover:text-amber-600 hover:bg-amber-50
+                    dark:hover:text-amber-400 dark:hover:bg-amber-900/30"
                 >
                   <Icon
                     :icon="monitor.status === 0 ? 'ph:play' : 'ph:pause'"
@@ -257,10 +285,11 @@
                 </button>
                 <button
                   @click="remove(monitor)"
-                  class="p-1.5 rounded-full transition-colors duration-200
-                    text-gray-400 hover:text-red-500 hover:bg-red-50
-                    dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/30
-                    box-content"
+                  class="flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200
+                    bg-white dark:bg-gray-700/50
+                    text-gray-500 dark:text-gray-400
+                    hover:text-red-600 hover:bg-red-50
+                    dark:hover:text-red-400 dark:hover:bg-red-900/30"
                 >
                   <Icon icon="carbon:trash-can" class="w-4 h-4" />
                 </button>
@@ -295,6 +324,10 @@ const props = defineProps({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  editId: {
+    type: Number,
+    default: null
   }
 })
 
@@ -309,11 +342,12 @@ const INTERVAL_OPTIONS = [
 ]
 
 const STATUS_MAP = {
-  0: { text: '暂停', classes: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' },
-  1: { text: '准备中', classes: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' },
-  2: { text: '在线', classes: 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400' },
-  8: { text: '异常', classes: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' },
-  9: { text: '离线', classes: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' }
+  0: { text: '暂停', classes: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 dark:bg-yellow-400' },
+  1: { text: '准备中', classes: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400', dot: 'bg-yellow-500 dark:bg-yellow-400' },
+  2: { text: '在线', classes: 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400', dot: 'bg-green-500 dark:bg-green-400' },
+  8: { text: '异常', classes: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400', dot: 'bg-red-500 dark:bg-red-400' },
+  9: { text: '离线', classes: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400', dot: 'bg-red-500 dark:bg-red-400' },
+  default: { text: '未知', classes: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300', dot: 'bg-gray-400' }
 }
 
 const password = ref('')
@@ -326,20 +360,13 @@ const form = ref({ name: '', url: '', interval: 300 })
 
 const intervalOptions = INTERVAL_OPTIONS
 
+const intervalText = (seconds) => `${Math.round((Number(seconds) || 300) / 60)} 分钟`
+
 const intervalOptionsFor = (monitor) => {
-  const known = INTERVAL_OPTIONS.some((item) => item.value === Number(monitor.interval))
-  if (known) return INTERVAL_OPTIONS
-  return [{ value: Number(monitor.interval), label: intervalText(monitor.interval) }, ...INTERVAL_OPTIONS]
+  const value = Number(monitor.interval)
+  if (INTERVAL_OPTIONS.some((item) => item.value === value)) return INTERVAL_OPTIONS
+  return [{ value, label: intervalText(value) }, ...INTERVAL_OPTIONS]
 }
-
-const intervalText = (seconds) => {
-  const value = Number(seconds) || 300
-  const minutes = Math.round(value / 60)
-  return `${minutes} 分钟`
-}
-
-const statusText = (status) => STATUS_MAP[status]?.text || '未知'
-const statusClass = (status) => STATUS_MAP[status]?.classes || 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300'
 
 const close = () => emit('update:modelValue', false)
 
@@ -349,12 +376,37 @@ const resetForm = () => {
   editingId.value = null
 }
 
+const startAdd = () => {
+  editingId.value = null
+  form.value = { name: '', url: '', interval: 300 }
+  adding.value = true
+  error.value = ''
+}
+
+const startEdit = (monitor) => {
+  adding.value = false
+  editingId.value = monitor.id
+  form.value = {
+    name: monitor.friendly_name,
+    url: monitor.url,
+    interval: Number(monitor.interval) || 300
+  }
+  error.value = ''
+}
+
+const cancelForm = () => resetForm()
+
 const load = async () => {
   loading.value = true
   error.value = ''
 
   try {
     monitors.value = await fetchMonitors()
+
+    if (props.editId) {
+      const target = monitors.value.find((item) => item.id === Number(props.editId))
+      if (target) startEdit(target)
+    }
   } catch (e) {
     error.value = e.message
   } finally {
@@ -393,26 +445,6 @@ const submitLogin = async () => {
     loading.value = false
   }
 }
-
-const startAdd = () => {
-  editingId.value = null
-  form.value = { name: '', url: '', interval: 300 }
-  adding.value = true
-  error.value = ''
-}
-
-const startEdit = (monitor) => {
-  adding.value = false
-  editingId.value = monitor.id
-  form.value = {
-    name: monitor.friendly_name,
-    url: monitor.url,
-    interval: Number(monitor.interval) || 300
-  }
-  error.value = ''
-}
-
-const cancelForm = () => resetForm()
 
 const submitAdd = async () => {
   if (loading.value) return

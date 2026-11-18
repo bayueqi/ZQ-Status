@@ -23,7 +23,7 @@
             :monitors="filteredMonitors"
             :error="errorMessage"
             :is-admin="isAdmin"
-            @delete="handleDelete"
+            @edit="handleEdit"
           />
         </main>
       </div>
@@ -31,6 +31,7 @@
       <AdminModal
         v-model="showAdminModal"
         :is-admin="isAdmin"
+        :edit-id="editTargetId"
         @login="handleLogin"
         @logout="handleLogout"
         @changed="refreshData"
@@ -39,9 +40,9 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, watch, onMounted } from 'vue'
   import { fetchMonitorData } from './utils/api'
-  import { isAdmin as hasAdmin, clearAdmin, removeMonitor } from './utils/admin'
+  import { isAdmin as hasAdmin, clearAdmin } from './utils/admin'
   import Header from './components/Header.vue'
   import Stats from './components/Stats.vue'
   import Filter from './components/Filter.vue'
@@ -57,6 +58,11 @@
   const errorMessage = ref('')
   const isAdmin = ref(hasAdmin())
   const showAdminModal = ref(false)
+  const editTargetId = ref(null)
+
+  watch(showAdminModal, (open) => {
+    if (!open) editTargetId.value = null
+  })
   
   // 筛选相关状态
   const currentFilter = ref('all')
@@ -123,16 +129,10 @@
     showAdminModal.value = false
   }
 
-  // 删除监控
-  const handleDelete = async (monitor) => {
-    if (!window.confirm(`删除「${monitor.friendly_name}」？`)) return
-    try {
-      await removeMonitor(monitor.id)
-    } catch (error) {
-      window.alert(error.message)
-    }
-    isAdmin.value = hasAdmin()
-    refreshData()
+  // 编辑监控
+  const handleEdit = (monitor) => {
+    editTargetId.value = monitor.id
+    showAdminModal.value = true
   }
   </script>
   

@@ -55,12 +55,12 @@
             />
             <Icon
               v-if="isAdmin"
-              icon="carbon:trash-can"
+              icon="ph:pencil-simple"
               class="w-5 h-5 p-1.5 rounded-full transition-colors duration-200
-                text-gray-400 hover:text-red-500 hover:bg-red-50
-                dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/30
+                text-gray-400 hover:text-blue-500 hover:bg-blue-50
+                dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-blue-900/30
                 box-content"
-              @click="emit('delete', monitor)"
+              @click="emit('edit', monitor)"
             />
           </div>
         </div>
@@ -353,7 +353,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['edit'])
 
 /**
  * 排序监控列表
