@@ -8,8 +8,10 @@
             :title="title"
             :is-refreshing="isRefreshing"
             :is-dark="isDark"
+            :is-admin="isAdmin"
             @refresh="refreshData"
             @toggle-theme="toggleTheme"
+            @open-admin="showAdminModal = true"
           />
           <Stats :monitors="monitors" />
           <!-- 筛选组件 -->
@@ -20,21 +22,32 @@
           <Card 
             :monitors="filteredMonitors"
             :error="errorMessage"
+            :is-admin="isAdmin"
+            @delete="handleDelete"
           />
         </main>
       </div>
       <Footer />
+      <AdminModal
+        v-model="showAdminModal"
+        :is-admin="isAdmin"
+        @login="handleLogin"
+        @logout="handleLogout"
+        @added="refreshData"
+      />
     </div>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
   import { fetchMonitorData } from './utils/api'
+  import { isAdmin as hasAdmin, clearAdmin, removeMonitor } from './utils/admin'
   import Header from './components/Header.vue'
   import Stats from './components/Stats.vue'
   import Filter from './components/Filter.vue'
   import Card from './components/Card.vue'
   import Footer from './components/Footer.vue'
+  import AdminModal from './components/AdminModal.vue'
   
   const title = ref(import.meta.env.VITE_APP_TITLE || '状态监控')
   const monitors = ref([])
@@ -42,6 +55,8 @@
   const isRefreshing = ref(false)
   const isDark = ref(false)
   const errorMessage = ref('')
+  const isAdmin = ref(hasAdmin())
+  const showAdminModal = ref(false)
   
   // 筛选相关状态
   const currentFilter = ref('all')
@@ -95,5 +110,29 @@
     initTheme()
     refreshData()
   })
+
+  // 登录管理
+  const handleLogin = () => {
+    isAdmin.value = true
+  }
+
+  // 退出管理
+  const handleLogout = () => {
+    clearAdmin()
+    isAdmin.value = false
+    showAdminModal.value = false
+  }
+
+  // 删除监控
+  const handleDelete = async (monitor) => {
+    if (!window.confirm(`删除「${monitor.friendly_name}」？`)) return
+    try {
+      await removeMonitor(monitor.id)
+    } catch (error) {
+      window.alert(error.message)
+    }
+    isAdmin.value = hasAdmin()
+    refreshData()
+  }
   </script>
   

@@ -31,6 +31,20 @@
         </span>
       </button>
       <button
+        @click="openAdmin"
+        class="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200
+          bg-white dark:bg-gray-800
+          shadow-sm shadow-gray-200/50 dark:shadow-gray-900/30
+          hover:bg-gray-50 dark:hover:bg-gray-700
+          group"
+      >
+        <Icon
+          icon="ph:gear-six"
+          class="w-5 h-5 transition-colors duration-200"
+          :class="isAdmin ? 'text-emerald-500' : 'text-gray-600 dark:text-gray-300'"
+        />
+      </button>
+      <button
         @click="toggleTheme"
         class="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200
           bg-white dark:bg-gray-800
@@ -78,10 +92,14 @@ const props = defineProps({
   isDark: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['refresh', 'toggle-theme'])
+const emit = defineEmits(['refresh', 'toggle-theme', 'open-admin'])
 
 /**
  * 刷新间隔
@@ -118,6 +136,11 @@ const refreshData = () => (emit('refresh'), countdown.value = REFRESH_INTERVAL)
 const toggleTheme = () => {
   emit('toggle-theme')
 }
+
+/**
+ * 打开管理面板
+ */
+const openAdmin = () => emit('open-admin')
 
 onMounted(() => {
   startTimer()

@@ -53,6 +53,15 @@
                 box-content"
               @click="openUrl(monitor.url)"
             />
+            <Icon
+              v-if="isAdmin"
+              icon="carbon:trash-can"
+              class="w-5 h-5 p-1.5 rounded-full transition-colors duration-200
+                text-gray-400 hover:text-red-500 hover:bg-red-50
+                dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/30
+                box-content"
+              @click="emit('delete', monitor)"
+            />
           </div>
         </div>
         <div class="shrink-0">
@@ -337,8 +346,14 @@ ChartJS.register(
 
 const props = defineProps({
   monitors: Array,
-  error: String
+  error: String,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 })
+
+const emit = defineEmits(['delete'])
 
 /**
  * 排序监控列表
